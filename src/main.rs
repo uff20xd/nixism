@@ -1,6 +1,5 @@
 mod settings_manager;
 
-use settings_manager;
 use std;
 use clap::{command, Parser};
 
