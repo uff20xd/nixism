@@ -8,18 +8,19 @@ use clap::{command, Parser};
 struct Args {
 
     #[arg(short, long)]
-    name: String,
+    install: String,
 
     #[arg(short, long, default_value_t = 1 )]
-    count: u8,
+    remove: u8,
+
+    #[arg(long, default_value_t = true )]
+    init: bool,
 
 }
 
 fn main() {
     let args = Args::parse();
 
-    for _ in 0..args.count {
-        print!("Hello {}", args.name);
-
-    }
+    println!("Your installing the package: {}", args.install );
+    
 }
