@@ -35,7 +35,7 @@ struct Args {
 fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()> {
     if !home_manager {
         let file_name = "nixism_nixos.nix";
-        let full_path = path + file_name;
+        let full_path = path.clone() + file_name;
         let mut file = File::create(path)?;
         file.write_all(b"{ pkgs, ... }: {
 environment.systemPackage = with pkgs; [
@@ -46,7 +46,7 @@ nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
 ")?;
     } else {
         let file_name = "nixism_home_manager.nix";
-        let full_path = path + file_name;
+        let full_path = path.clone() + file_name;
         let mut file = File::create(path)?;
         file.write_all(b"{ pkgs, ... }: {
 home.packages = with pkgs; [
