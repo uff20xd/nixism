@@ -34,7 +34,7 @@ struct Args {
 
 fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()> {
     if !home_manager {
-        let file_name = "nixism_nixos.nix";
+        let file_name = "/nixism_nixos.nix";
         let full_path = path + file_name;
         let mut file = File::create(full_path)?;
         file.write_all(b"{ pkgs, ... }: {
