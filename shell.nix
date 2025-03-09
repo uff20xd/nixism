@@ -8,8 +8,4 @@ in pkgs.mkShell {
       rustc 
     ];
 
-    shellHook = ''
-      alias nixism="steam-run ~/programming/nixism/target/debug/nixism"
-    '';
-
 }
