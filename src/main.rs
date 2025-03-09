@@ -37,7 +37,7 @@ fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()>
 
         let mut file = File::create(path)?;
         file.write_all(b"{ pkgs, ... }: {
-environment.systemPackage = [
+environment.systemPackage = with pkgs; [
 
 ];
 nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
@@ -46,7 +46,7 @@ nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
     } else {
         let mut file = File::create(path)?;
         file.write_all(b"{ pkgs, ... }: {
-home.packages = [
+home.packages = with pkgs; [
 
 ];
 nix.setting.experimental-features = [  \"nix command\" \"flakes\"];
