@@ -12,7 +12,6 @@ impl Default for Config {
     fn default() -> Self {
         Self { path_to_nixos_config: ("None").to_string(), path_to_home_manager_config: ("None").to_string()}
     }
-    
 }
 
 

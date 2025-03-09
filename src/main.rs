@@ -37,6 +37,10 @@ fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()>
         let file_name = "/nixism_nixos.nix";
         let full_path = path + file_name;
         let mut file = File::create(full_path)?;
+
+        let current_config = confy::load("nixism", None);
+
+        println!("{:?}", current_config);
         file.write_all(b"{ pkgs, ... }: {
 environment.systemPackage = with pkgs; [
 
@@ -57,7 +61,6 @@ nix.setting.experimental-features = [  \"nix command\" \"flakes\"];
 ")?;
         
     }
-
     Ok(())
 }
 
@@ -78,8 +81,4 @@ fn main() {
             println!("Your installing the package: {}", args.install );
         };
     }
-
-
-
-    
 }
