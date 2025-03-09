@@ -32,9 +32,28 @@ struct Args {
 
 }
 
-fn create_package_file (path: String) -> std::io::Result<()> {
-    let mut file = File::create(path)?;
-    file.write_all(b"Hello World!")?;
+fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()> {
+    if !home_manager {
+
+        let mut file = File::create(path)?;
+        file.write_all(b"{ pkgs, ... }: {
+environment.systemPackage = [
+
+];
+nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
+}
+")?;
+    } else {
+        let mut file = File::create(path)?;
+        file.write_all(b"{ pkgs, ... }: {
+home.packages = [
+
+];
+nix.setting.experimental-features = [  \"nix command\" \"flakes\"];
+}
+")?;
+        
+    }
 
     Ok(())
 }
@@ -42,7 +61,8 @@ fn create_package_file (path: String) -> std::io::Result<()> {
 fn main() {
     let args = Args::parse();
     if args.init != *("None") {
-        let output = create_package_file(args.init.clone());
+
+        let output = create_package_file(args.init.clone(), args.home_manager);
 
         print!("{:?}", output);
 
