@@ -1,5 +1,6 @@
 mod settings_manager;
 
+use settings_manager::*;
 use std::{
     process::Command,
     fs::{
@@ -37,7 +38,7 @@ fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()>
         let file_name = "/nixism_nixos.nix";
         let full_path = path + file_name;
         let mut file = File::create(full_path)?;
-        let test = settings_manager::change_nixos_path();
+        let test = "deez";
 
         println!("{:?}", test);
         dbg!(test);
@@ -52,7 +53,8 @@ nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
     } else {
         let file_name = "/nixism_home_manager.nix";
         let full_path = path + file_name;
-        let mut file = File::create(full_path)?;
+        let mut file = File::create(&full_path)?;
+        handle_home_manager_settings(&full_path); 
         file.write_all(b"{ pkgs, ... }: {
 home.packages = with pkgs; [
 
