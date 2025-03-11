@@ -2,11 +2,12 @@ mod settings_manager;
 
 use settings_manager::*;
 use std::{
-    process::Command,
+    self,
     fs::{
-        OpenOptions,
         File,
     },
+    env::current_dir,
+    path::{self, Path},
     io::prelude::*,
 };
 use clap::{command, Parser};
@@ -36,12 +37,11 @@ struct Args {
 fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()> {
     if !home_manager {
         let file_name = "/nixism_nixos.nix";
-        let full_path = path + file_name;
-        let mut file = File::create(full_path)?;
-        let test = "deez";
+        let relative_path= path + file_name;
+        let file_path= path::absolute(&relative_path)?;
+        let mut file = File::create(&relative_path)?;
 
-        println!("{:?}", test);
-        dbg!(test);
+        manage_nixos_path( file_path.into_os_string().into_string().expect("huh")); 
 
         file.write_all(b"{ pkgs, ... }: {
 environment.systemPackage = with pkgs; [
@@ -52,10 +52,14 @@ nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
 ")?;
     } else {
         let file_name = "/nixism_home_manager.nix";
-        let full_path = path + file_name;
-        let mut file = File::create(&full_path)?;
-        handle_home_manager_settings(full_path); 
-        file.write_all(b"{ pkgs, ... }: {
+        let relative_path = path + file_name;
+        let file_path= path::absolute(&relative_path)?;
+        let mut file = File::create(&relative_path)?;
+
+        manage_home_manager_path( file_path.into_os_string().into_string().expect("huh")); 
+
+        file.write_all(
+            b"{ pkgs, ... }: {
 home.packages = with pkgs; [
 
 ];
