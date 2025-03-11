@@ -1,5 +1,6 @@
 use serde_derive::*;
 use std::{default::Default, io::Error, slice::ChunksMut};
+use toml::*;
 //use confy;
 
 #[derive(Debug, Serialize, Deserialize)]
