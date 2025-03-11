@@ -34,6 +34,7 @@ struct Args {
 
 }
 
+// accessed by the --init flag 
 fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()> {
     if !home_manager {
         let file_name = "/nixism_nixos.nix";
