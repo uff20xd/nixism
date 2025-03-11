@@ -1,10 +1,11 @@
 use serde_derive::*;
-use std::{default::Default, fs, io::Error, path::Path, slice::ChunksMut};
 use users::*;
 use toml::*;
 use std::{
+    fs,
     fs::File,
     io::prelude::*,
+    path::*,
 };
 
 
@@ -71,25 +72,33 @@ fn load_settings() -> Config {
 
 }
 
-fn write_settings(config_input: Config) {
-    let current_user_as_osstring = get_current_username()
-        .expect("Couldnt get the username");
-    let current_user = current_user_as_osstring.to_str()
-        .expect("Just make it a string please");
-    let path = ("/home/").to_string() + current_user;
+fn write_settings(config_input: Config) -> std::io::Result<()>{
+
+    let homedirectory = get_home_directory();
 
     let new_config_file_contents = toml::to_string(&config_input)
-        .unwrap();
+        .expect("couldnt Serialize to toml lol"); 
 
-    let mut new_config_file = File::create(path.clone() + "/.config/nixism/config.toml")
-        .expect("new config file in load setting");
+    let mut new_config_file = File::create(homedirectory.clone() + "/.config/nixism/config.toml")?;
+
+    let _ = write!(new_config_file, "{}", new_config_file_contents);
+
+    Ok(())
 
 }
 
-pub fn handle_home_manager_settings (path_to_home_manager_config: &str) {
+pub fn get_home_directory () -> String {
+    let current_user_as_osstring = get_current_username()
+        .expect("couldnt get username");
+    let current_user = current_user_as_osstring.to_str()
+        .expect("couldnt convert username to a string");
+    ("/home/").to_string() + current_user
+}
+
+pub fn handle_home_manager_settings (path_to_home_manager_config: String) {
     let mut config: Config = load_settings();
     dbg!(&config);
-
+    assert_eq!(config.path_to_home_manager_config, path_to_home_manager_config)
 
 
 }

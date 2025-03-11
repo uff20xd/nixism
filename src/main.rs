@@ -54,7 +54,7 @@ nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
         let file_name = "/nixism_home_manager.nix";
         let full_path = path + file_name;
         let mut file = File::create(&full_path)?;
-        handle_home_manager_settings(&full_path); 
+        handle_home_manager_settings(full_path); 
         file.write_all(b"{ pkgs, ... }: {
 home.packages = with pkgs; [
 
