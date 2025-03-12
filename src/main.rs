@@ -100,7 +100,13 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
         unencoded_raw_file = fs::read(path)?;
         raw_file = String::from_utf8(unencoded_raw_file).expect("Couldnt read file as Utf8");
         file = raw_file.split_whitespace().collect();
-        dbg!(raw_file);
+
+        for i in file.iter() {
+            println!("{}", i);
+        }
+
+
+        dbg!(file);
 
         Ok(())
     } else {
@@ -109,7 +115,12 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
         unencoded_raw_file= fs::read(&path)?;
         raw_file = String::from_utf8(unencoded_raw_file).expect("Couldnt read file as Utf8");
         file = raw_file.split_whitespace().collect();
-        dbg!(raw_file);
+
+        for i in 1..file.len() {
+
+        }
+
+        dbg!(file);
 
         Ok(())
     }
