@@ -89,3 +89,7 @@ pub fn manage_nixos_path(path_to_home_manager_config: String) {
     write_settings(config).expect("You seem to suck balls if you get this error");
 }
 
+pub fn debug_settings () -> Config {
+    load_settings()
+}
+

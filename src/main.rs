@@ -32,6 +32,9 @@ struct Args {
     #[arg(short = 'm', default_value_t = false)]
     home_manager: bool,
 
+    #[arg(long, short, default_value_t = false)]
+    debug: bool
+
 }
 
 // accessed by the --init flag 
@@ -110,5 +113,8 @@ fn main() {
         if args.install != *("None") {
             println!("Your installing the package: {}", args.install );
         };
+    }
+    if args.debug {
+        dbg!(debug_settings());
     }
 }
