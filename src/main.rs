@@ -7,10 +7,10 @@ use std::{
         File,
     },
     env::current_dir,
-    path::{self, Path},
+    path::{self, Path, PathBuf},
     io::prelude::*,
 };
-use clap::{command, Args, Parser};
+use clap::{command, Parser};
 
 
 #[derive(Parser, Debug)]
@@ -72,20 +72,23 @@ nix.setting.experimental-features = [  \"nix command\" \"flakes\"];
     Ok(())
 }
 
-fn set_path (path: String, home_manager: bool) -> (){
+fn set_path (path: String, home_manager: bool) -> Result<PathBuf, std::io::Error>{
 
-    let file_path_raw= path::absolute(&relative_path)?;
-    let file_path = file_path_raw.into_os_string().into_string()
+    let file_path_raw= path::absolute(&path)?;
+    let file_path = file_path_raw.clone().into_os_string().into_string()
         .expect("couldnt get correct path buffer");
 
     if !home_manager && Path::new(&file_path).exists() {
         manage_nixos_path(file_path);
+        Ok(file_path_raw)
 
     } else if Path::new(&file_path).exists(){
         manage_home_manager_path(file_path);
+        Ok(file_path_raw)
         
     } else {
         print!("File not Found");
+        Ok(file_path_raw)
     }
 }
 
@@ -100,7 +103,9 @@ fn main() {
     } else {
 
         if args.path != *("None"){
-            set_path(args.path, args.home_manager.clone());
+            let output = set_path(args.path, args.home_manager.clone());
+
+            dbg!(output);
         }
         if args.install != *("None") {
             println!("Your installing the package: {}", args.install );
