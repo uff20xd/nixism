@@ -10,7 +10,7 @@ use std::{
     path::{self, Path},
     io::prelude::*,
 };
-use clap::{command, Parser};
+use clap::{command, Args, Parser};
 
 
 #[derive(Parser, Debug)]
@@ -72,6 +72,23 @@ nix.setting.experimental-features = [  \"nix command\" \"flakes\"];
     Ok(())
 }
 
+fn set_path (path: String, home_manager: bool) -> (){
+
+    let file_path_raw= path::absolute(&relative_path)?;
+    let file_path = file_path_raw.into_os_string().into_string()
+        .expect("couldnt get correct path buffer");
+
+    if !home_manager && Path::new(&file_path).exists() {
+        manage_nixos_path(file_path);
+
+    } else if Path::new(&file_path).exists(){
+        manage_home_manager_path(file_path);
+        
+    } else {
+        print!("File not Found");
+    }
+}
+
 fn main() {
     let args = Args::parse();
     if args.init != *("None") {
@@ -83,7 +100,7 @@ fn main() {
     } else {
 
         if args.path != *("None"){
-
+            set_path(args.path, args.home_manager.clone());
         }
         if args.install != *("None") {
             println!("Your installing the package: {}", args.install );

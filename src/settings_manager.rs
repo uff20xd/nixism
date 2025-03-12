@@ -50,7 +50,6 @@ fn load_settings() -> Config {
         toml::from_str(&settings_file)
             .expect("couldnt deserialize from file")
     }
-
 }
 
 fn write_settings(config_input: Config) -> std::io::Result<()>{
