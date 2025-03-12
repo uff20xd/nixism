@@ -1,9 +1,8 @@
 mod settings_manager;
 
 use settings_manager::*;
-use users::switch::set_both_gid;
 use std::{
-    self, env::current_dir, fs::{self, File}, io::{self, prelude::*}, os::linux::raw, path::{self, Path, PathBuf}
+    self, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, string::{self, FromUtf8Error},
 };
 use clap::{command, Parser};
 
@@ -70,7 +69,7 @@ nix.setting.experimental-features = [  \"nix command\" \"flakes\"];
     Ok(())
 }
 
-fn set_path (path: String, home_manager: bool) -> Result<PathBuf, std::io::Error>{
+fn set_path (path: String, home_manager: &bool) -> Result<PathBuf, std::io::Error>{
 
     let file_path_raw= path::absolute(&path)?;
     let file_path = file_path_raw.clone().into_os_string().into_string()
@@ -90,17 +89,28 @@ fn set_path (path: String, home_manager: bool) -> Result<PathBuf, std::io::Error
     }
 }
 
-fn add_package (package_name: String, home_manager: bool) -> io::Result<()>{
+fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
     let path: String;
-    let raw_file: Vec<u8>;
-    let file: String;
+    let unencoded_raw_file: Vec<u8>;
+    let raw_file: String;
+    let mut file: Vec<&str>;
     if !home_manager {
+
         path = load_settings().path_to_nixos_config;
-        raw_file = fs::read(path)?;
+        unencoded_raw_file = fs::read(path)?;
+        raw_file = String::from_utf8(unencoded_raw_file).expect("Couldnt read file as Utf8");
+        file = raw_file.split_whitespace().collect();
+        dbg!(raw_file);
+
         Ok(())
     } else {
+
         path = load_settings().path_to_home_manager_config;
-        raw_file = fs::read(path)?;
+        unencoded_raw_file= fs::read(&path)?;
+        raw_file = String::from_utf8(unencoded_raw_file).expect("Couldnt read file as Utf8");
+        file = raw_file.split_whitespace().collect();
+        dbg!(raw_file);
+
         Ok(())
     }
 }
@@ -116,15 +126,15 @@ fn main() {
     } else {
 
         if args.path != *("None"){
-            let output_set_path= set_path(args.path, args.home_manager.clone());
+            let output_set_path= set_path(args.path, &args.home_manager);
 
-            dbg!(output_set_path);
+            let _ = dbg!(output_set_path);
         }
         if args.install != *("None") {
             println!("Your installing the package: {}", &args.install );
-            let output_add_package = add_package(args.install, args.home_manager.clone());
+            let output_add_package = add_package(args.install, &args.home_manager);
 
-            dbg!(output_add_package);
+            let _ = dbg!(output_add_package);
         };
     }
     if args.debug {
