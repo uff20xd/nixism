@@ -21,7 +21,7 @@ fn load_settings() -> Config {
     let settings_file: String;
 
     // if the file exists it just reads from it
-    if Path::new(&(homedirectory.clone() + "/.config/nixism")).exists() {
+    if Path::new(&(homedirectory.clone() + "/.config/nixism/config.toml")).exists() {
         settings_file = fs::read_to_string( homedirectory.clone() + "/.config/nixism/config.toml")
             .expect("Couldnt read the settings file");
 
