@@ -11,12 +11,12 @@ use std::{
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    path_to_nixos_config: String,
-    path_to_home_manager_config: String,
+    pub path_to_nixos_config: String,
+    pub path_to_home_manager_config: String,
 }
 
 
-fn load_settings() -> Config {
+pub fn load_settings() -> Config {
     let homedirectory= get_home_directory();
     let settings_file: String;
 
@@ -89,7 +89,4 @@ pub fn manage_nixos_path(path_to_home_manager_config: String) {
     write_settings(config).expect("You seem to suck balls if you get this error");
 }
 
-pub fn debug_settings () -> Config {
-    load_settings()
-}
 

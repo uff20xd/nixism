@@ -1,14 +1,9 @@
 mod settings_manager;
 
 use settings_manager::*;
+use users::switch::set_both_gid;
 use std::{
-    self,
-    fs::{
-        File,
-    },
-    env::current_dir,
-    path::{self, Path, PathBuf},
-    io::prelude::*,
+    self, env::current_dir, fs::{self, File}, io::{self, prelude::*}, os::linux::raw, path::{self, Path, PathBuf}
 };
 use clap::{command, Parser};
 
@@ -95,6 +90,21 @@ fn set_path (path: String, home_manager: bool) -> Result<PathBuf, std::io::Error
     }
 }
 
+fn add_package (package_name: String, home_manager: bool) -> io::Result<()>{
+    let path: String;
+    let raw_file: Vec<u8>;
+    let file: String;
+    if !home_manager {
+        path = load_settings().path_to_nixos_config;
+        raw_file = fs::read(path)?;
+        Ok(())
+    } else {
+        path = load_settings().path_to_home_manager_config;
+        raw_file = fs::read(path)?;
+        Ok(())
+    }
+}
+
 fn main() {
     let args = Args::parse();
     if args.init != *("None") {
@@ -106,15 +116,18 @@ fn main() {
     } else {
 
         if args.path != *("None"){
-            let output = set_path(args.path, args.home_manager.clone());
+            let output_set_path= set_path(args.path, args.home_manager.clone());
 
-            dbg!(output);
+            dbg!(output_set_path);
         }
         if args.install != *("None") {
-            println!("Your installing the package: {}", args.install );
+            println!("Your installing the package: {}", &args.install );
+            let output_add_package = add_package(args.install, args.home_manager.clone());
+
+            dbg!(output_add_package);
         };
     }
     if args.debug {
-        dbg!(debug_settings());
+        dbg!(load_settings());
     }
 }
