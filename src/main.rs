@@ -2,7 +2,7 @@ mod settings_manager;
 
 use settings_manager::*;
 use std::{
-    self, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, string::{self, FromUtf8Error},
+    self, any::Any, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, string::{self, FromUtf8Error}
 };
 use clap::{command, Parser};
 
@@ -11,16 +11,16 @@ use clap::{command, Parser};
 #[command(version, about, long_about = None)]
 struct Args {
 
-    #[arg(short, long, default_value_t = ("None").to_string() )]
+    #[arg(short, long, default_value_t = ("None").to_owned() )]
     install: String,
 
     #[arg(short, long, default_value_t = 1 )]
     remove: u8,
 
-    #[arg(long="init", default_value_t = ("None").to_string() )]
+    #[arg(long="init", default_value_t = ("None").to_owned() )]
     init: String,
 
-    #[arg(long, default_value_t = ("None").to_string() )]
+    #[arg(long, default_value_t = ("None").to_owned() )]
     path: String,
 
     #[arg(short = 'm', default_value_t = false)]
@@ -42,7 +42,7 @@ fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()>
         manage_nixos_path( file_path.into_os_string().into_string().expect("huh")); 
 
         file.write_all(b"{ pkgs, ... }: {
-environment.systemPackage = with pkgs; [
+environment.systemPackages = with pkgs; [
 
 ];
 nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
@@ -95,22 +95,32 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
     let raw_file: String;
     let mut file: Vec<&str>;
     let mut balls: u64 = 80;
+    let mut package_index: usize = 0_usize;
+    let mut installed_packages: Vec<&str> = vec!("hello");
     if !home_manager {
 
         path = load_settings().path_to_nixos_config;
         unencoded_raw_file = fs::read(path)?;
         raw_file = String::from_utf8(unencoded_raw_file).expect("Couldnt read file as Utf8");
         file = raw_file.split_whitespace().collect();
+        
 
-        for i in 0..(&file.len() - 3) {
-            println!("{}", i);
-            if file[i] == "hey" {
-                println!("{:?}", &file[i..(i-1)]);
+        for index_of_file in 0..(&file.len() - 4) {
+            println!("{}", &file[index_of_file]);
+            if file[index_of_file..(index_of_file + 5)] == ["environment.systemPackages", "=", "with", "pkgs;", "["] {
+                package_index = &index_of_file + 4;
+                loop {
+                    println!("{}", &file[package_index]);
+                    if file[package_index] == "];" {
+                        break;
+                    }
+                    installed_packages.push(file.clone()[package_index]);
+                    package_index += 1;
+                }
             }
         }
 
         dbg!(balls);
-        dbg!(file);
 
         Ok(())
     } else {
