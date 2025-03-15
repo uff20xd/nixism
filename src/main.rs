@@ -102,10 +102,10 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
         raw_file = String::from_utf8(unencoded_raw_file).expect("Couldnt read file as Utf8");
         file = raw_file.split_whitespace().collect();
 
-        for i in 0..(file.len() - 3) {
+        for i in 0..(&file.len() - 3) {
             println!("{}", i);
-            if file[i..(i+2)] {
-
+            if file[i] == "hey" {
+                println!("{:?}", &file[i..(i-1)]);
             }
         }
 
