@@ -110,7 +110,7 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
             println!("{}", &file[index_of_file]);
             if file[index_of_file..(index_of_file + 5)] == ["environment.systemPackages", "=", "with", "pkgs;", "["] {
                 package_index = &index_of_file + 4;
-                package_list_position = index_of_file.clone();
+                package_list_position = index_of_file;
                 loop {
                     println!("{}", &file[package_index]);
                     if file[package_index] == "];" {
@@ -129,8 +129,10 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
                 already_installed = true;
             }
         }
+        dbg!(&package_list_position);
         if !already_installed && (package_list_position != 0){
             file.insert(package_list_position, &package_name);
+            println!("jafahfdhfhfhfhfhfshfdhfhfuhnjniudhfjdshfjh")
         }
 
         dbg!(file);
