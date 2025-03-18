@@ -1,5 +1,8 @@
 mod settings_manager;
+mod file_manager;
 
+use file_manager::write_to_packagefile;
+use settings_manager::*;
 use settings_manager::*;
 use std::{
     self, any::Any, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, string::{self, FromUtf8Error}
