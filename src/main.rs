@@ -94,9 +94,10 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
     let unencoded_raw_file: Vec<u8>;
     let raw_file: String;
     let mut file: Vec<&str>;
-    let mut balls: u64 = 80;
-    let mut package_index: usize = 0_usize;
+    let mut package_index: usize;
+    let mut package_list_position: usize = 0;
     let mut installed_packages: Vec<&str> = vec!("hello");
+    let mut already_installed: bool = false;
     if !home_manager {
 
         path = load_settings().path_to_nixos_config;
@@ -109,18 +110,30 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
             println!("{}", &file[index_of_file]);
             if file[index_of_file..(index_of_file + 5)] == ["environment.systemPackages", "=", "with", "pkgs;", "["] {
                 package_index = &index_of_file + 4;
+                package_list_position = index_of_file.clone();
                 loop {
                     println!("{}", &file[package_index]);
                     if file[package_index] == "];" {
                         break;
                     }
-                    installed_packages.push(file.clone()[package_index]);
+                    installed_packages.push(file[package_index]);
                     package_index += 1;
                 }
             }
         }
 
-        dbg!(balls);
+        dbg!(&installed_packages);
+
+        for i_packages in installed_packages {
+            if i_packages == package_name {
+                already_installed = true;
+            }
+        }
+        if !already_installed && (package_list_position != 0){
+            file.insert(package_list_position, &package_name);
+        }
+
+        dbg!(file);
 
         Ok(())
     } else {
