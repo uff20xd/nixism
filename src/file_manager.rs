@@ -9,7 +9,7 @@ use std::{
 use crate::settings_manager::*;
 
 
-pub fn write_to_packagefile (input: Vec<&str>, home_manager: &bool) -> Result<(), Box<dyn std::error::Error>> {
+pub fn write_to_packagefile (input: Vec<&str>, home_manager: bool) -> Result<(), Box<dyn std::error::Error>> {
     if !home_manager {
         let path = load_settings().path_to_nixos_config;
         let mut file = File::create(path)?;

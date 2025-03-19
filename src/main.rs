@@ -72,7 +72,7 @@ nix.setting.experimental-features = [  \"nix command\" \"flakes\"];
     Ok(())
 }
 
-fn set_path (path: String, home_manager: &bool) -> Result<PathBuf, std::io::Error>{
+fn set_path (path: String, home_manager: bool) -> Result<PathBuf, std::io::Error>{
 
     let file_path_raw= path::absolute(&path)?;
     let file_path = file_path_raw.clone().into_os_string().into_string()
@@ -96,7 +96,7 @@ fn set_path (path: String, home_manager: &bool) -> Result<PathBuf, std::io::Erro
     }
 }
 
-fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
+fn add_package (package_name: String, home_manager: bool) -> io::Result<()>{
     let path: String;
     let unencoded_raw_file: Vec<u8>;
     let raw_file: String;
@@ -151,12 +151,10 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
         file = raw_file.split_whitespace().collect();
 
         for index_of_file in 0..(&file.len() - 4) {
-            println!("{:?}", &file[index_of_file..(index_of_file + 5)]);
             if file[index_of_file..(index_of_file + 5)] == ["home.packages", "=", "with", "pkgs;", "["] {
                 package_index = &index_of_file + 5;
                 package_list_position = index_of_file + 5;
                 loop {
-                    println!("{}", &file[package_index]);
                     if file[package_index] == "];" || package_index >= file.len() {
                         break;
                     }
@@ -195,15 +193,13 @@ fn main() {
         let _all_fine = test_for_file_existence(args.home_manager);
 
         if args.path != *("None"){
-            let output_set_path= set_path(args.path, &args.home_manager);
+            print!("Your setting path to: {}", &args.path);
+            let output_set_path= set_path(args.path, args.home_manager);
 
-            let _ = dbg!(output_set_path);
         }
         if args.install != *("None") {
             println!("Your installing the package: {}", &args.install );
-            let output_add_package = add_package(args.install, &args.home_manager);
-
-            let _ = dbg!(output_add_package);
+            let output_add_package = add_package(args.install, args.home_manager);
         };
     }
     if args.debug {
