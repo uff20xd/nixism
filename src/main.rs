@@ -1,7 +1,7 @@
 mod settings_manager;
 mod file_manager;
 
-use file_manager::write_to_packagefile;
+use file_manager::{test_for_file_existence, write_to_packagefile};
 use settings_manager::*;
 use settings_manager::*;
 use std::{
@@ -80,15 +80,19 @@ fn set_path (path: String, home_manager: &bool) -> Result<PathBuf, std::io::Erro
 
     if !home_manager && Path::new(&file_path).exists() {
         manage_nixos_path(file_path);
+
         Ok(file_path_raw)
 
     } else if Path::new(&file_path).exists(){
         manage_home_manager_path(file_path);
+
         Ok(file_path_raw)
-        
+
     } else {
         print!("File not Found");
+
         Ok(file_path_raw)
+
     }
 }
 
@@ -135,7 +139,8 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
             file.insert(package_list_position, &package_name);
         }
 
-        dbg!(file);
+        let _ = write_to_packagefile(file, home_manager);
+
 
         Ok(())
     } else {
@@ -145,7 +150,34 @@ fn add_package (package_name: String, home_manager: &bool) -> io::Result<()>{
         raw_file = String::from_utf8(unencoded_raw_file).expect("Couldnt read file as Utf8");
         file = raw_file.split_whitespace().collect();
 
-        dbg!(file);
+        for index_of_file in 0..(&file.len() - 4) {
+            println!("{:?}", &file[index_of_file..(index_of_file + 5)]);
+            if file[index_of_file..(index_of_file + 5)] == ["home.packages", "=", "with", "pkgs;", "["] {
+                package_index = &index_of_file + 5;
+                package_list_position = index_of_file + 5;
+                loop {
+                    println!("{}", &file[package_index]);
+                    if file[package_index] == "];" || package_index >= file.len() {
+                        break;
+                    }
+                    installed_packages.push(file[package_index]);
+                    package_index += 1;
+                }
+            }
+        }
+
+        for i_packages in installed_packages {
+            if i_packages == package_name {
+                already_installed = true;
+            }
+        }
+
+        if !already_installed && (package_list_position != 0){
+            file.insert(package_list_position, &package_name);
+        }
+
+        let _ = write_to_packagefile(file, home_manager);
+
 
         Ok(())
     }
@@ -160,6 +192,7 @@ fn main() {
         print!("{:?}", output);
 
     } else {
+        let _all_fine = test_for_file_existence(args.home_manager);
 
         if args.path != *("None"){
             let output_set_path= set_path(args.path, &args.home_manager);
