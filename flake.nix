@@ -20,10 +20,11 @@
       overlays.default = final: prev: { nixism = final.callPackage ./default.nix { }; };
 
       packages = forAllSystems (system: {
-        default = pkgsFor.${system}.callPackage ./default.nix { };
+        default = pkgsFor.${system}.nixism;
       });
 
       nixosModules = import ./default.nix { overlays = overlayList; };
+
       devShells = forAllSystems (system: {
         default = pkgsFor.${system}.callPackage ./shell.nix { };
       });
