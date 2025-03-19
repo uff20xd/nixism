@@ -21,6 +21,7 @@
 
       packages = forAllSystems (system: {
         default = pkgsFor.${system}.nixism;
+        nixism = pkgsFor.${system}.nixism;
       });
 
       nixosModules = import ./modules { overlays = overlayList; };
