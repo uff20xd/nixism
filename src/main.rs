@@ -3,9 +3,8 @@ mod file_manager;
 
 use file_manager::{test_for_file_existence, write_to_packagefile};
 use settings_manager::*;
-use settings_manager::*;
 use std::{
-    self, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, string::{self, FromUtf8Error}
+    self, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, process::{self, Command}
 };
 use clap::{command, Parser};
 
@@ -178,6 +177,20 @@ fn add_package (package_name: String, home_manager: bool) -> io::Result<()>{
 
 
         Ok(())
+    }
+}
+
+fn rebuild (home_manager: bool) {
+    let settings = load_settings();
+    let mut path_to_directory: Vec<&str> = match home_manager {
+        false => settings.path_to_nixos_config.split("/").collect(),
+        true => settings.path_to_home_manager_config.split("/").collect(),
+    };
+    let _ = path_to_directory.remove(&path_to_directory.len() - 1);
+    let args = path_to_directory.join("/");
+
+    if !home_manager {
+        let _output = Command::new("nixos-rebuild").arg("switch --flake");
     }
 }
 
