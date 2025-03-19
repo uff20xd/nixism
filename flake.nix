@@ -17,7 +17,8 @@
 
       overlayList = [ self.overlays.default ];
     in {
-      overlays.default = final: prev: { nixism = final.callPackage ./default.nix { }; };
+
+      overlays.default = final: prev: { nixism = final.callPackage ./package.nix { }; };
 
       packages = forAllSystems (system: {
         default = pkgsFor.${system}.nixism;
