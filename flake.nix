@@ -23,7 +23,7 @@
         default = pkgsFor.${system}.nixism;
       });
 
-      nixosModules = import ./default.nix { overlays = overlayList; };
+      nixosModules = import ./modules { overlays = overlayList; };
 
       devShells = forAllSystems (system: {
         default = pkgsFor.${system}.callPackage ./shell.nix { };
