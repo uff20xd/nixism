@@ -12,6 +12,9 @@
       packages = forAllSystems (system: {
         default = pkgsFor.${system}.callPackage ./default.nix { };
       });
+      nixosModules = forAllSystems (system:{
+        default = pkgsFor.${system}.callPackage ./default.nix { };
+      });
       devShells = forAllSystems (system: {
         default = pkgsFor.${system}.callPackage ./shell.nix { };
       });
