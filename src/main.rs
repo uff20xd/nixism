@@ -4,9 +4,9 @@ mod file_manager;
 use file_manager::{test_for_file_existence, write_to_packagefile};
 use settings_manager::*;
 use std::{
-    self, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, process::{self, Command}
+    self, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, process::{self, Command, Output}
 };
-use clap::{command, Parser};
+use clap::{command, error::Result, Parser};
 
 
 #[derive(Parser, Debug)]
@@ -24,6 +24,9 @@ struct Args {
 
     #[arg(long, default_value_t = ("None").to_owned() )]
     path: String,
+    
+    #[arg(long, short = 'b', default_value_t = false)]
+    rebuild: bool,
 
     #[arg(short = 'm', default_value_t = false)]
     home_manager: bool,
@@ -47,7 +50,7 @@ fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()>
 environment.systemPackages = with pkgs; [
 
 ];
-nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
+nix.settings.experimental-features = [ \"nix command\" \"flakes\" ];
 }
 ")?;
     } else {
@@ -63,7 +66,6 @@ nix.setting.experimental-features = [ \"nix command\" \"flakes\" ];
 home.packages = with pkgs; [
 
 ];
-nix.setting.experimental-features = [  \"nix command\" \"flakes\"];
 }
 ")?;
         
@@ -180,18 +182,25 @@ fn add_package (package_name: String, home_manager: bool) -> io::Result<()>{
     }
 }
 
-fn rebuild (home_manager: bool) {
+fn rebuild (home_manager: bool) -> Result<(), > {
     let settings = load_settings();
     let mut path_to_directory: Vec<&str> = match home_manager {
         false => settings.path_to_nixos_config.split("/").collect(),
         true => settings.path_to_home_manager_config.split("/").collect(),
     };
-    let _ = path_to_directory.remove(&path_to_directory.len() - 1);
-    let args = path_to_directory.join("/");
+    let _ = path_to_directory.remove(path_to_directory.len() - 1);
+    let args= path_to_directory.join("/");
+    let output;
 
     if !home_manager {
-        let _output = Command::new("nixos-rebuild").arg("switch --flake");
+        output = Command::new("sudo").arg("nixos-rebuild").arg("switch").arg("--flake").arg(".").current_dir(&args).output()?;
+        println!("{:?}", output)
     }
+    else {
+        output = Command::new("home-manager").arg("switch").arg("--flake").arg(".").current_dir(&args).output()?;
+        println!("{:?}", output);
+    }
+    Ok(())
 }
 
 fn main() {
@@ -207,13 +216,16 @@ fn main() {
 
         if args.path != *("None"){
             print!("Your setting path to: {}", &args.path);
-            let output_set_path= set_path(args.path, args.home_manager);
+            let _output_set_path= set_path(args.path, args.home_manager);
 
         }
         if args.install != *("None") {
             println!("Your installing the package: {}", &args.install );
-            let output_add_package = add_package(args.install, args.home_manager);
+            let _output_add_package = add_package(args.install, args.home_manager);
         };
+        if args.rebuild {
+            let _ = rebuild(args.home_manager);
+        }
     }
     if args.debug {
         dbg!(load_settings());
