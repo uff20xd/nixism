@@ -3,6 +3,5 @@ pkgs.mkShell {
   inputsFrom = [ (pkgs.callPackage ./default.nix { }) ];
   buildInputs = with pkgs; [
     rust-analyzer
-    rust-analyzer
   ];
 }

@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "nixism - A tool to imperative be declaritive";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -14,7 +14,7 @@
     in {
 
       packages = forAllSystems (system: {
-        default = pkgsFor.${system}.callPackage ./default { };
+        default = pkgsFor.${system}.callPackage ./default.nix { };
       });
 
       devShell = forAllSystems (system: {
