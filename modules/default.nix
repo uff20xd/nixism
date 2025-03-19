@@ -1,15 +1,14 @@
 { overlays }:
 
 {
-  simple-go-server = import ./simple-go-server-service.nix;
-
+  nixism = import ./nixism.nix;
   overlayNixpkgsForThisInstance =
     { pkgs, ... }:
     {
       nixpkgs = {
         inherit overlays;
       };
-    };
+  };
 
 
 }
