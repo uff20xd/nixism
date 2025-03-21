@@ -197,12 +197,12 @@ fn rebuild (home_manager: bool) -> Result<(), > {
 
     if !home_manager {
         output = Command::new("sudo");
-        output.arg("nixos-rebuild").arg("switch").arg("--flake").arg(".").current_dir(&args);
+        output.arg("nixos-rebuild").arg("switch").arg("--flake").arg(".").current_dir(&args).output()?;
         println!("{:?}", output)
     }
     else {
         output = Command::new("home-manager");
-        output.arg("switch").arg("--flake").arg(".").current_dir(&args);
+        output.arg("switch").arg("--flake").arg(".").current_dir(&args).output()?;
         println!("{:?}", output);
     }
     Ok(())
@@ -220,8 +220,7 @@ fn self_update (home_manager: bool) -> Result<()> {
     let mut output;
 
     output = Command::new("nix");
-    output.arg("flake").arg("lock").arg("--update-input").arg("nixism").current_dir(&args);
-    println!("{:?}", output);
+    output.arg("flake").arg("lock").arg("--update-input").arg("nixism").current_dir(&args).output()?;
 
     Ok(())
 }
