@@ -219,7 +219,7 @@ fn self_update (home_manager: bool) -> Result<()> {
     let args= path_to_directory.join("/");
     let mut command = Command::new("nix");
 
-    let output = command.arg("flake").arg("lock").arg("--update-input").arg("nixism").current_dir(&args).output()?;
+    let output = command.arg("flake").arg("update").arg("nixism").current_dir(&args).output()?;
 
     let heh = format!("{:?}", output);
     print!("{}", heh);
