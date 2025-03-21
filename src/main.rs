@@ -190,14 +190,16 @@ fn rebuild (home_manager: bool) -> Result<(), > {
     };
     let _ = path_to_directory.remove(path_to_directory.len() - 1);
     let args= path_to_directory.join("/");
-    let output;
+    let mut output;
 
     if !home_manager {
-        output = Command::new("sudo").arg("nixos-rebuild").arg("switch").arg("--flake").arg(".").current_dir(&args).output()?;
+        output = Command::new("sudo");
+        output.arg("nixos-rebuild").arg("switch").arg("--flake").arg(".").current_dir(&args);
         println!("{:?}", output)
     }
     else {
-        output = Command::new("home-manager").arg("switch").arg("--flake").arg(".").current_dir(&args).output()?;
+        output = Command::new("home-manager");
+        output.arg("switch").arg("--flake").arg(".").current_dir(&args);
         println!("{:?}", output);
     }
     Ok(())
