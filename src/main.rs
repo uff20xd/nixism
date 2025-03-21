@@ -4,7 +4,7 @@ mod file_manager;
 use file_manager::{test_for_file_existence, write_to_packagefile};
 use settings_manager::*;
 use std::{
-    self, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, process::{self, Command, Output}
+    self, fmt::format, fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, process::{self, Command, Output}
 };
 use clap::{command, error::Result, Parser};
 
@@ -217,10 +217,12 @@ fn self_update (home_manager: bool) -> Result<()> {
     };
     let _ = path_to_directory.remove(path_to_directory.len() - 1);
     let args= path_to_directory.join("/");
-    let mut output;
+    let mut command = Command::new("nix");
 
-    output = Command::new("nix");
-    output.arg("flake").arg("lock").arg("--update-input").arg("nixism").current_dir(&args).output()?;
+    let output = command.arg("flake").arg("lock").arg("--update-input").arg("nixism").current_dir(&args).output()?;
+
+    let heh = format!("{:?}", output);
+    print!("{}", heh);
 
     Ok(())
 }
