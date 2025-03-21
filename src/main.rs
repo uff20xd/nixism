@@ -32,7 +32,10 @@ struct Args {
     home_manager: bool,
 
     #[arg(long, short, default_value_t = false)]
-    debug: bool
+    debug: bool,
+
+    #[arg(long, short, default_value_t = false)]
+    self_update: bool,
 
 }
 
@@ -205,6 +208,24 @@ fn rebuild (home_manager: bool) -> Result<(), > {
     Ok(())
 }
 
+fn self_update (home_manager: bool) -> Result<()> {
+    
+    let settings = load_settings();
+    let mut path_to_directory: Vec<&str> = match home_manager {
+        false => settings.path_to_nixos_config.split("/").collect(),
+        true => settings.path_to_home_manager_config.split("/").collect(),
+    };
+    let _ = path_to_directory.remove(path_to_directory.len() - 1);
+    let args= path_to_directory.join("/");
+    let mut output;
+
+    output = Command::new("nix");
+    output.arg("flake").arg("lock").arg("--update-input").arg("nixism").current_dir(&args);
+    println!("{:?}", output);
+
+    Ok(())
+}
+
 fn main() {
     let args = Args::parse();
     if args.init != *("None") {
@@ -219,12 +240,15 @@ fn main() {
         if args.path != *("None"){
             print!("Your setting path to: {}", &args.path);
             let _output_set_path= set_path(args.path, args.home_manager);
-
+        }
+        if args.self_update {
+            print!("Updating Nixism");
+            let _output_self_update = self_update(args.home_manager);
         }
         if args.install != *("None") {
             println!("Your installing the package: {}", &args.install );
             let _output_add_package = add_package(args.install, args.home_manager);
-        };
+        }
         if args.rebuild {
             let _ = rebuild(args.home_manager);
         }
