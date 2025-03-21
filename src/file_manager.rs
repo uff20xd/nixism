@@ -1,10 +1,7 @@
 use core::panic;
 use std::{
-    fs::{self, File},
-    fmt::write,
     io::Write,
-    path::Path,
-    error::Error,
+    self,  fs::{self, File}, io::{self, prelude::*}, path::{self, Path, PathBuf}, 
 };
 use crate::settings_manager::*;
 
@@ -40,3 +37,4 @@ pub fn test_for_file_existence (home_manager: bool) -> Result<String, Box<dyn st
         panic!("The File doesnt exist - in function test_for_file_existence ")
     }
 }
+
