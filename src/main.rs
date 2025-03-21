@@ -50,7 +50,7 @@ fn create_package_file (path: String, home_manager: bool) -> std::io::Result<()>
 environment.systemPackages = with pkgs; [
 
 ];
-nix.settings.experimental-features = [ \"nix command\" \"flakes\" ];
+nix.settings.experimental-features = [ \"nix-command\" \"flakes\" ];
 }
 ")?;
     } else {
